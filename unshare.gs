@@ -2,19 +2,19 @@
 function unShare(folderToUnshare = DriveApp.getRootFolder().getId()) {
   var files = DriveApp.searchFiles("'me' in owners and '" + folderToUnshare + "' in parents");
   while (files.hasNext()) {
-    var currentFile = files.next();
-    removeEditors(currentFile);
-    removeViewers(currentFile);
-    setSharing(currentFile);
+    makePrivate(files.next());
   }
   var folders = DriveApp.searchFolders("'me' in owners and '" + folderToUnshare + "' in parents");
   while (folders.hasNext()) {
-    var currentFolder = folders.next();
-    removeEditors(currentFolder);
-    removeViewers(currentFolder);
-    setSharing(currentFolder);
+    makePrivate(folders.next());
     unShare(currentFolder.getId());
   }
+}
+
+function makePrivate(current) {
+  removeEditors(current);
+  removeViewers(current);
+  setSharing(current);
 }
 
 function removeEditors(current) {
@@ -46,3 +46,4 @@ function setSharing(current) {
     Logger.log(e);
   }
 }
+
