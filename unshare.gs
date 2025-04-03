@@ -2,19 +2,19 @@
 function unShare(folderToUnshare = DriveApp.getRootFolder().getId()) {
   var files = DriveApp.searchFiles("'me' in owners and '" + folderToUnshare + "' in parents");
   while (files.hasNext()) {
-    makePrivate(files.next());
+    var currentFile = files.next();
+    removeEditors(currentFile);
+    removeViewers(currentFile);
+    setSharing(currentFile);
   }
   var folders = DriveApp.searchFolders("'me' in owners and '" + folderToUnshare + "' in parents");
   while (folders.hasNext()) {
-    makePrivate(folders.next());
+    var currentFolder = folders.next();
+    removeEditors(currentFolder);
+    removeViewers(currentFolder);
+    setSharing(currentFolder);
     unShare(currentFolder.getId());
   }
-}
-
-function makePrivate(current) {
-  removeEditors(current);
-  removeViewers(current);
-  setSharing(current);
 }
 
 function removeEditors(current) {
@@ -22,6 +22,7 @@ function removeEditors(current) {
   for (var i in editors) {
     try {
       current.removeEditor(editors[i].getEmail());
+      Logger.log(`Removed editor "${editors[i].getEmail()}" from: "${current.getName()}"`);
     } catch (e) {
       Logger.log(e);
     }
@@ -33,6 +34,7 @@ function removeViewers(current) {
   for (var i in viewers) {
     try {
       current.removeViewer(viewers[i].getEmail());
+      Logger.log(`Removed viewer: "${viewers[i].getEmail()}" from: "${current.getName()}"`);
     } catch (e) {
       Logger.log(e);
     }
@@ -46,4 +48,3 @@ function setSharing(current) {
     Logger.log(e);
   }
 }
-
